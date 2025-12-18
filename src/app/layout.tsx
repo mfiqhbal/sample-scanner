@@ -18,6 +18,14 @@ export const metadata: Metadata = {
   title: "Sample Scanner",
   description: "Scan geological sample labels and save to Google Sheets",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Sample Scanner",
+  },
+  icons: {
+    apple: "/icon-192.png",
+  },
 };
 
 export const viewport: Viewport = {
