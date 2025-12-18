@@ -43,8 +43,13 @@ async function downloadImageAsBase64(url: string): Promise<string> {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   const base64 = Buffer.from(arrayBuffer).toString('base64');
-  const contentType = response.headers.get('content-type') || 'image/jpeg';
-  return `data:${contentType};base64,${base64}`;
+
+  // Telegram may return non-standard content-types, normalize to accepted types
+  const contentType = response.headers.get('content-type') || '';
+  const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const mediaType = validTypes.includes(contentType) ? contentType : 'image/jpeg';
+
+  return `data:${mediaType};base64,${base64}`;
 }
 
 export async function POST(request: NextRequest) {
