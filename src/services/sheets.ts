@@ -35,17 +35,10 @@ export async function appendToSheet(data: SampleData): Promise<void> {
   const auth = await getAuthClient();
   const sheets = google.sheets({ version: 'v4', auth });
 
-  // Format timestamp
-  const timestamp = new Date().toLocaleString('en-MY', {
-    timeZone: 'Asia/Kuala_Lumpur',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
+  // Format timestamp in ISO-like format that Google Sheets won't misinterpret
+  const now = new Date();
+  const kl = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
+  const timestamp = `${kl.getFullYear()}-${String(kl.getMonth() + 1).padStart(2, '0')}-${String(kl.getDate()).padStart(2, '0')} ${String(kl.getHours()).padStart(2, '0')}:${String(kl.getMinutes()).padStart(2, '0')}:${String(kl.getSeconds()).padStart(2, '0')}`;
 
   // Row data: Timestamp | Well | Company | Depth From | Depth To | Box Code
   const row = [
