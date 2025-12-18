@@ -4,6 +4,10 @@ import { appendToSheet } from '@/services/sheets';
 import { SampleData } from '@/types';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const ACCESS_CODE = process.env.TELEGRAM_ACCESS_CODE;
+
+// Store authorized chat IDs (resets on cold start - users just re-unlock)
+const authorizedChats = new Set<number>();
 
 interface TelegramUpdate {
   message?: {
@@ -71,9 +75,40 @@ export async function POST(request: NextRequest) {
 
     // Handle /start command
     if (message.text === '/start') {
+      const isUnlocked = !ACCESS_CODE || authorizedChats.has(chatId);
+      const unlockMsg = ACCESS_CODE && !isUnlocked
+        ? `\n\n🔒 <b>This bot is protected.</b>\nSend <code>/unlock YOUR_CODE</code> to access.`
+        : '';
+
       await sendTelegramMessage(
         chatId,
-        `Hi ${userName}! 👋\n\nSend me a photo of a sample label and I'll extract the data and save it to Google Sheets.\n\n<b>Label format:</b>\n• Well: [name]\n• Company: [name]\n• Depth: [from] - [to]\n• Box Code: [XXX.XX.XXX]`
+        `Hi ${userName}! 👋\n\nSend me a photo of a sample label and I'll extract the data and save it to Google Sheets.\n\n<b>Label format:</b>\n• Well: [name]\n• Company: [name]\n• Depth: [from] - [to]\n• Box Code: [XXX.XX.XXX]${unlockMsg}`
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    // Handle /unlock command
+    if (message.text?.startsWith('/unlock ')) {
+      if (!ACCESS_CODE) {
+        await sendTelegramMessage(chatId, '🔓 No access code required. You can use the bot freely!');
+        return NextResponse.json({ ok: true });
+      }
+
+      const code = message.text.replace('/unlock ', '').trim();
+      if (code === ACCESS_CODE) {
+        authorizedChats.add(chatId);
+        await sendTelegramMessage(chatId, '✅ <b>Access granted!</b>\n\nYou can now send photos to scan.');
+      } else {
+        await sendTelegramMessage(chatId, '❌ Invalid code. Please try again.');
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    // Check authorization for protected features
+    if (ACCESS_CODE && !authorizedChats.has(chatId)) {
+      await sendTelegramMessage(
+        chatId,
+        '🔒 <b>Access required</b>\n\nSend <code>/unlock YOUR_CODE</code> to use this bot.'
       );
       return NextResponse.json({ ok: true });
     }
