@@ -6,7 +6,8 @@ A simple web app to scan geological sample labels and automatically save the ext
 
 - Camera capture (mobile-friendly, uses rear camera)
 - Image upload with drag-and-drop
-- AI-powered OCR (Claude Haiku or GPT-4o-mini)
+- AI-powered OCR (Google Gemini, OpenAI GPT-4o-mini, or Claude Haiku)
+- Provider comparison tool to test accuracy across all providers
 - Smart parsing for Well, Company, Depth range, and Box Code
 - Editable form for verification before saving
 - Auto-save to Google Sheets
@@ -40,18 +41,24 @@ npm install
 
 ### 2. OCR Provider Setup
 
-Choose one (or both) OCR providers:
+Choose one or more OCR providers:
 
-#### Option A: Claude (Anthropic)
-1. Go to https://console.anthropic.com/
-2. Create an account and add billing
-3. Go to **API Keys** → **Create Key**
+#### Option A: Google Gemini (Recommended - Cheapest)
+1. Go to https://aistudio.google.com/apikey
+2. Sign in with your Google account
+3. Click **Create API Key**
 4. Copy the key
 
 #### Option B: OpenAI
 1. Go to https://platform.openai.com/api-keys
 2. Create an account and add billing
 3. Click **Create new secret key**
+4. Copy the key
+
+#### Option C: Claude (Anthropic)
+1. Go to https://console.anthropic.com/
+2. Create an account and add billing
+3. Go to **API Keys** → **Create Key**
 4. Copy the key
 
 ### 3. Google Cloud Console Setup
@@ -116,14 +123,17 @@ Choose one (or both) OCR providers:
 
 2. Edit `.env.local`:
    ```env
-   # OCR Provider: "claude" or "openai"
-   OCR_PROVIDER=claude
+   # OCR Provider: "gemini", "openai", or "claude"
+   OCR_PROVIDER=gemini
 
-   # Claude API (if using claude)
-   ANTHROPIC_API_KEY=sk-ant-api03-xxxxx
+   # Google Gemini API (recommended - cheapest)
+   GEMINI_API_KEY=your-gemini-api-key
 
    # OpenAI API (if using openai)
    OPENAI_API_KEY=sk-xxxxx
+
+   # Claude API (if using claude)
+   ANTHROPIC_API_KEY=sk-ant-api03-xxxxx
 
    # Google Sheets
    GOOGLE_SHEETS_ID=your_sheet_id
@@ -220,8 +230,9 @@ You should see:
 
 3. Add Environment Variables:
    - `OCR_PROVIDER`
-   - `ANTHROPIC_API_KEY` (if using Claude)
+   - `GEMINI_API_KEY` (if using Gemini)
    - `OPENAI_API_KEY` (if using OpenAI)
+   - `ANTHROPIC_API_KEY` (if using Claude)
    - `GOOGLE_SHEETS_ID`
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
    - `GOOGLE_PRIVATE_KEY`
@@ -235,16 +246,28 @@ You should see:
 
 ## OCR Cost Comparison
 
-For 3,000 images/day:
+For 10,000 images/week (~40,000/month):
 
-| Provider | Model | Daily (USD) | Monthly (MYR) |
-|----------|-------|-------------|---------------|
-| **OpenAI** | gpt-4o-mini | ~$1.50 | ~RM200 |
-| Claude | haiku-3.5 | ~$4.50 | ~RM608 |
+| Provider | Model | Weekly (USD) | Monthly (USD) |
+|----------|-------|--------------|---------------|
+| **Google Gemini** | gemini-2.0-flash | ~$0.50 | **~$2** |
+| OpenAI | gpt-4o-mini | ~$3.50 | ~$15 |
+| Claude | haiku-3.5 | ~$10.50 | ~$45 |
 
-To switch providers, change `OCR_PROVIDER` in `.env.local`:
+**Gemini is 22x cheaper than Claude with excellent accuracy for handwritten text.**
+
+### Compare Providers
+
+Visit `/compare` in the app to test all providers on the same image and compare:
+- Accuracy of extracted data
+- Response time
+- Cost per image
+
+### Switch Provider
+
+Change `OCR_PROVIDER` in `.env.local`:
 ```env
-OCR_PROVIDER=openai   # or "claude"
+OCR_PROVIDER=gemini   # or "openai" or "claude"
 ```
 
 ---

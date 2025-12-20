@@ -3,6 +3,7 @@ import { OCRProvider, OCRResult, EXTRACTION_PROMPT } from './types';
 
 export class OpenAIOCRProvider implements OCRProvider {
   name = 'openai';
+  model = 'gpt-4o-mini';
   private client: OpenAI;
 
   constructor() {

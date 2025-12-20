@@ -51,7 +51,12 @@ export function useOCR(): UseOCRReturn {
         throw new Error(result.error || 'OCR processing failed');
       }
 
-      setRawText(result.raw || JSON.stringify(result.data, null, 2));
+      const rawOutput = {
+        provider: result.provider,
+        model: result.model,
+        data: result.data,
+      };
+      setRawText(JSON.stringify(rawOutput, null, 2));
       setProgress(100);
 
       // Return parsed data from Claude

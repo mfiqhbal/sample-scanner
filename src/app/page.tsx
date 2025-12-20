@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { Camera } from '@/components/Camera';
 import { ImageUploader } from '@/components/ImageUploader';
 import { SampleDataForm } from '@/components/SampleDataForm';
@@ -134,6 +135,13 @@ export default function Home() {
                 <p>• Box Code: [XXX.XX.XXX]</p>
               </div>
             </div>
+
+            <Link
+              href="/compare"
+              className="mt-4 block text-center text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              Compare OCR providers &rarr;
+            </Link>
           </div>
         )}
 

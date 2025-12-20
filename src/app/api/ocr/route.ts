@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       provider: ocrProvider.name,
+      model: ocrProvider.model,
       data: result,
     });
   } catch (error) {

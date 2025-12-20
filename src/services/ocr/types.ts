@@ -8,6 +8,7 @@ export interface OCRResult {
 
 export interface OCRProvider {
   name: string;
+  model: string;
   recognize(base64Image: string): Promise<OCRResult>;
 }
 

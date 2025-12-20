@@ -3,6 +3,7 @@ import { OCRProvider, OCRResult, EXTRACTION_PROMPT } from './types';
 
 export class ClaudeOCRProvider implements OCRProvider {
   name = 'claude';
+  model = 'claude-3-5-haiku-20241022';
   private client: Anthropic;
 
   constructor() {
